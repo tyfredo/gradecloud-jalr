@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: gradecloud-postgres
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: gradecloud
+      POSTGRES_PASSWORD: gradecloud_dev
+      POSTGRES_DB: gradecloud
+    volumes:
+      - gradecloud_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U gradecloud -d gradecloud"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  api:
+    profiles: ["app"]
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: postgresql://gradecloud:gradecloud_dev@postgres:5432/gradecloud
+      CORS_ORIGIN: http://localhost:3000
+      PORT: "4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  gradecloud_pgdata:

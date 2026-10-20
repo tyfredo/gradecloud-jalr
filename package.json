@@ -1,0 +1,27 @@
+{
+  "name": "gradecloud-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/api",
+    "apps/web"
+  ],
+  "engines": {
+    "node": ">=24 <27"
+  },
+  "scripts": {
+    "dev:api": "npm run dev -w @gradecloud/api",
+    "dev:web": "npm run dev -w @gradecloud/web",
+    "dev": "concurrently -n API,WEB -c cyan,magenta \"npm:dev:api\" \"npm:dev:web\"",
+    "db:migrate": "npm run db:migrate -w @gradecloud/api",
+    "db:seed": "npm run db:seed -w @gradecloud/api",
+    "build:api": "npm run build -w @gradecloud/api",
+    "build:web": "npm run generate -w @gradecloud/web",
+    "test": "npm run test -w @gradecloud/api",
+    "typecheck": "npm run build:api && npm run typecheck -w @gradecloud/web",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.0"
+  }
+}
